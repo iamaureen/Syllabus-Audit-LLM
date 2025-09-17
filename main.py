@@ -1,10 +1,11 @@
 #https://github.com/ASU/aiml-ssmdv-student-support-ml-data-visualization/tree/main/base-ASUllm-documentation
 
-from pypdf import PdfReader
+
 
 from config import TEST_LLMs_API_ACCESS_TOKEN, TEST_LLMs_REST_API_PROVIDERS_URL, TEST_LLMs_REST_API_URL
 from ASUllmAPI import query_model_info_api, model_provider_mapper, model_list
 from ASUllmAPI import ModelConfig, query_llm, batch_query_llm
+from input_processing import read_single_pdf_file
 
 
 def execute_single_query(query):
@@ -22,34 +23,16 @@ def execute_single_query(query):
 
 if __name__ == '__main__':
 
-    #define the model
+    # define the model
     model = ModelConfig(name="gpt4_1", #llama3_2-90b
                         provider="openai", #aws
                         access_token=TEST_LLMs_API_ACCESS_TOKEN,
                         api_url=TEST_LLMs_REST_API_URL)
 
+    # read input
+
     # Create a PdfReader object by providing the path to your PDF file
-    reader = PdfReader("Data/Copy of CEL 100 Tan Spring 2025 18207.pdf")
-
-    # Get the total number of pages in the PDF
-    num_pages = len(reader.pages)
-    print(f"Number of pages: {num_pages}")
-
-    # Access a specific page (e.g., the first page, index 0)
-    # page = reader.pages[0]
-    # Extract text from the page
-    # text = page.extract_text()
-    # print(f"Text from the first page:\n{text}")
-
-    # Extract text from all pages
-    all_text = ""
-    for i, page in enumerate(reader.pages):
-        page_text = page.extract_text()
-        if page_text:
-            all_text += f"\n\n--- Page {i + 1} ---\n{page_text}"
-
-    # Print the complete extracted text
-    # print(all_text)
+    data = read_single_pdf_file("Data/Copy of CEL 100 Tan Spring 2025 18207.pdf")
 
     llm_prompt = f"""
     You are an assistant helping a faculty member audit a syllabus document. The following text was extracted from a syllabus. Your task is to:
@@ -74,7 +57,7 @@ if __name__ == '__main__':
 
     Extracted document content:
     \"\"\"
-    {all_text}
+    {data}
     \"\"\"
     """
 
