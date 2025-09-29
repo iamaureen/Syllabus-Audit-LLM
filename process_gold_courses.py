@@ -20,6 +20,12 @@ def process_gold_courses():
             subject = str(row['Subject']).strip()
             nbr = str(row['Nbr']).strip()
             gold_designation = str(row['Gold Designation']).strip()
+            # Remove abbreviation enclosed in parentheses at the end
+            if gold_designation.endswith(')'):
+                # Find the last opening parenthesis
+                last_open_paren = gold_designation.rfind('(')
+                if last_open_paren != -1:
+                    gold_designation = gold_designation[:last_open_paren].strip()
 
             # Combine Subject and Nbr with a space
             course_key = f"{subject} {nbr}"
