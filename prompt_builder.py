@@ -13,8 +13,9 @@ For each document that you read, you must:
    - Identify the main or lead instructor’s name in the document.
 
 3. Extract Gold Statement & Learning Outcomes Sections:
-   - Identify and extract all sections labeled "Gold Statement" and "Learning Outcomes".
+   - Identify and extract the full text content of sections labeled "Gold Statement" and "Learning Outcomes".
    - If such sections are not present, mark them as "NA".
+   - Include the complete text content of these sections, not just "yes" or "no".
 
 4. Return Output as JSON:
    - Do NOT produce an Excel file.
@@ -24,18 +25,18 @@ For each document that you read, you must:
        - "course_code": Extracted course code (or "NA" if not found).
        - "course_name": Extracted course name (or "NA" if not found).
        - "instructor_name": Extracted instructor name (or "NA" if not found).
-       - "gold_statement": "yes" if a Gold Statement section exists, otherwise "no".
-       - "learning_outcome": "yes" if a Learning Outcomes section exists, otherwise "no".
+       - "gold_statement": Full text content of the Gold Statement section (or "NA" if not found).
+       - "learning_outcome": Full text content of the Learning Outcomes section (or "NA" if not found).
 
 Strictly follow JSON format for output. For example:
 {{
-  "file_name": {filename}
+  "file_name": "{filename}",
   "full_title": "CEL 100 Great Ideas Politics & Ethics",
   "course_code": "CEL 100",
   "course_name": "Great Ideas Politics & Ethics",
   "instructor_name": "Dr. Jane Smith",
-  "gold_statement": "yes",
-  "learning_outcome": "no"
+  "gold_statement": "This course fulfills the General Studies requirement for Humanities, Arts and Design by exploring fundamental questions about politics and ethics through classic texts.",
+  "learning_outcome": "Students will be able to analyze political theories and apply ethical frameworks to contemporary issues."
 }}
 
 Do not include any additional commentary—just the JSON output.
