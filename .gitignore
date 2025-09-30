@@ -2,6 +2,7 @@ results.json
 credentials.conf
 Data/
 Map/
+Output/
 .DS_store
 # Byte-compiled / optimized / DLL files
 __pycache__/
