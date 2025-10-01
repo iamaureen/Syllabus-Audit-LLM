@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 
 def process_gold_courses():
@@ -6,6 +7,7 @@ def process_gold_courses():
     Read the CSV file from Map folder and create a dictionary where:
     - Key: Subject + " " + Nbr (e.g., "ABS 130")
     - Value: Gold Designation
+    Once the dictionary is created, read results.xlsx and add gold_destination column
     """
     # Read the CSV file
     csv_file_path = "Map/ASU Courses and Topics Approved for General Studies - General Studies Gold.csv"
@@ -43,6 +45,30 @@ def process_gold_courses():
             count += 1
 
         print(f"\nTotal number of courses: {len(course_gold_dict)}")
+
+        # Read results.xlsx and add gold_destination column
+        results_path = "Output/results.xlsx"
+        if os.path.exists(results_path):
+            try:
+                results_df = pd.read_excel(results_path)
+                
+                # Add gold_destination column
+                gold_destinations = []
+                for _, row in results_df.iterrows():
+                    course_code = str(row.get('course_code', '')).strip()
+                    gold_destination = course_gold_dict.get(course_code, 'NA')
+                    gold_destinations.append(gold_destination)
+                
+                results_df['gold_destination'] = gold_destinations
+                
+                # Save updated results.xlsx
+                results_df.to_excel(results_path, index=False)
+                print(f"Updated results.xlsx with gold_destination column")
+                
+            except Exception as e:
+                print(f"Error updating results.xlsx: {e}")
+        else:
+            print(f"Warning: {results_path} not found. Skipping Excel update.")
 
         return course_gold_dict
 

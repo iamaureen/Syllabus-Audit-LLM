@@ -35,8 +35,8 @@ Strictly follow JSON format for output. For example:
   "course_code": "CEL 100",
   "course_name": "Great Ideas Politics & Ethics",
   "instructor_name": "Dr. Jane Smith",
-  "gold_statement": "This course fulfills the General Studies requirement for Humanities, Arts and Design by exploring fundamental questions about politics and ethics through classic texts.",
-  "learning_outcome": "Students will be able to analyze political theories and apply ethical frameworks to contemporary issues."
+  "syllabus_gold_statement": "This course fulfills the General Studies requirement for Humanities, Arts and Design by exploring fundamental questions about politics and ethics through classic texts.",
+  "syllabu_learning_outcome": "Students will be able to analyze political theories and apply ethical frameworks to contemporary issues."
 }}
 
 Do not include any additional commentary—just the JSON output.

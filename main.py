@@ -61,12 +61,12 @@ if __name__ == '__main__':
 
     # Convert results to DataFrame and save as Excel
     df = pd.DataFrame(results)
-    df.to_excel("results.xlsx", index=False)
+    df.to_excel("Output/results.xlsx", index=False)
     print("Results saved to results.xlsx")
 
     # Comment out JSON writing code
     # print(json.dumps(results, indent=2))
-    # with open("results.json", "w", encoding="utf-8") as f:
+    # with open("Output/results.json", "w", encoding="utf-8") as f:
     #     json.dump(results, f, indent=2, ensure_ascii=False)
 
 
