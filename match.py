@@ -11,15 +11,15 @@ from load_gold_statements_csv import load_gold_statements_csv
 def match_gold_statements_with_llm(model, gold_destination, syllabus_statement, expected_statement):
     """
     Use LLM as judge to determine if syllabus statement matches the expected statement.
-    Returns: "match", "NA", or "did not match"
+    Returns: "matched", "not matched", or "not present" (when syllabus statement is missing).
     """
-    # Check if syllabus statement is empty or NA
-    if syllabus_statement == 'NA' or not syllabus_statement.strip():
-        return "NA"
-    
-    # Check if expected statement is not available
-    if expected_statement is None or expected_statement == 'NA' or not expected_statement.strip():
-        return "NA"
+    # If syllabus statement missing/empty → not present
+    if syllabus_statement == 'NA' or not str(syllabus_statement).strip():
+        return "not present"
+
+    # If expected statement unavailable, treat as not matched (cannot verify)
+    if expected_statement is None or expected_statement == 'NA' or not str(expected_statement).strip():
+        return "not matched"
     
     prompt = f"""
 You are an impartial evaluator for academic course statements. Determine if a syllabus Gold Statement matches the required criteria for a specific General Studies Gold designation area.
@@ -53,15 +53,15 @@ JSON only:
             if start != -1 and end != -1 and end > start:
                 json_text = response_text[start:end + 1]
                 result = json.loads(json_text)
-                return "match" if result.get('match') == 'yes' else "did not match"
+                return "matched" if result.get('match') == 'yes' else "not matched"
             else:
-                return "did not match"
+                return "not matched"
         except json.JSONDecodeError:
-            return "did not match"
+            return "not matched"
             
     except Exception as e:
         print(f"  LLM error: {e}")
-        return "did not match"
+        return "not matched"
 
 
 def main():
