@@ -129,8 +129,9 @@ def process_gold_matching():
         api_url=TEST_LLMs_REST_API_URL
     )
 
-    # Store match results for each row
+    # Store match results and expected statements for each row
     match_results = []
+    expected_statements = []
 
     # For each entry, match gold statements using LLM
     for idx, row in df.iterrows():
@@ -141,15 +142,17 @@ def process_gold_matching():
         print(f"{course_code} -> {gold_designation}")
         
         # Get expected statement from CSV
-        expected_statement = gold_statements_dict.get(gold_designation)
+        expected_statement = gold_statements_dict.get(gold_designation, 'NA')
+        expected_statements.append(expected_statement)
         
         # Match gold statements using LLM
         match_result = match_gold_statements_with_llm(model, gold_designation, syllabus_statement, expected_statement)
         match_results.append(match_result)
         print(f"  Match result: {match_result}")
 
-    # Add match results as a new column
+    # Add match results and expected statements as new columns
     df['match_result'] = match_results
+    df['expected gold statement'] = expected_statements
     
     # Create output filename with "_matched" extension
     base_name = os.path.splitext(designation_path)[0]
@@ -158,7 +161,7 @@ def process_gold_matching():
     # Save updated results file
     try:
         df.to_excel(output_path, index=False, na_rep='NA')
-        print(f"\nCreated {output_path} with match_result column")
+        print(f"\nCreated {output_path} with match_result and expected gold statement columns")
         return True
     except Exception as e:
         print(f"Error saving updated Excel file: {e}")

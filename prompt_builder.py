@@ -25,7 +25,7 @@ For each document that you read, you must:
        - "course_code": Extracted course code (or "NA" if not found).
        - "course_name": Extracted course name (or "NA" if not found).
        - "instructor_name": Extracted instructor name (or "NA" if not found).
-       - "gold_statement": Full text content of the Gold Statement section (or "NA" if not found).
+       - "extracted_gold_statement": Full text content of the Gold Statement section (or "NA" if not found).
        - "learning_outcome": Full text content of the Learning Outcomes section (or "NA" if not found).
 
 IMPORTANT: The "file_name" field must be exactly "{filename}" - do not change it or extract a different filename from the document content.
@@ -37,7 +37,7 @@ Strictly follow JSON format for output. For example:
   "course_code": "CEL 100",
   "course_name": "Great Ideas Politics & Ethics",
   "instructor_name": "Dr. Jane Smith",
-  "gold_statement": "This course fulfills the General Studies requirement for Humanities, Arts and Design by exploring fundamental questions about politics and ethics through classic texts.",
+  "extracted_gold_statement": "This course fulfills the General Studies requirement for Humanities, Arts and Design by exploring fundamental questions about politics and ethics through classic texts.",
   "learning_outcome": "Students will be able to analyze political theories and apply ethical frameworks to contemporary issues."
 }}
 
