@@ -11,6 +11,8 @@ from prompt_builder import build_syllabus_audit_prompt
 from ASUllmAPI import query_model_info_api, model_provider_mapper, model_list
 from ASUllmAPI import ModelConfig, query_llm, batch_query_llm
 from input_processing import read_single_pdf_file, read_pdfs_from_folder
+from map_course_designation import process_course_designation
+from match import process_gold_matching
 
 
 def execute_single_query(query, model):
@@ -77,6 +79,14 @@ def process_single_pdf(pdf_path, model, output_file=None):
     df = pd.DataFrame([parsed])
     df.to_excel(output_file, index=False)
     print(f"Single PDF result saved to {output_file}")
+    
+    # Automatically add gold designations
+    print("Adding gold designations...")
+    process_course_designation()
+    
+    # Automatically perform gold statement matching
+    print("Performing gold statement matching...")
+    process_gold_matching()
 
     return parsed
 
@@ -122,6 +132,14 @@ def process_folder(folder_path, model, output_file="Output/all_results.xlsx", ma
     df.to_excel(output_file, index=False)
     print(f"Folder processing complete. Results saved to {output_file}")
     print(f"Processed {len(results)} files")
+    
+    # Automatically add gold designations
+    print("Adding gold designations...")
+    process_course_designation()
+    
+    # Automatically perform gold statement matching
+    print("Performing gold statement matching...")
+    process_gold_matching()
 
     return results
 

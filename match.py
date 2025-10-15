@@ -2,10 +2,32 @@ import os
 import sys
 import pandas as pd
 import json
+import glob
 
 from config import TEST_LLMs_API_ACCESS_TOKEN, TEST_LLMs_REST_API_URL
 from ASUllmAPI import ModelConfig, query_llm
 from load_gold_statements_csv import load_gold_statements_csv
+
+
+def find_designation_file():
+    """
+    Automatically detect which designation file to use:
+    - Look for files ending with "_designation.xlsx" in Output directory
+    - Return the most recent one if multiple exist
+    """
+    output_dir = "Output"
+    if not os.path.exists(output_dir):
+        return None
+    
+    # Look for designation files
+    designation_files = glob.glob(os.path.join(output_dir, "*_designation.xlsx"))
+    
+    if designation_files:
+        # If multiple files, use the most recent one
+        most_recent = max(designation_files, key=os.path.getmtime)
+        return most_recent
+    
+    return None
 
 
 def match_gold_statements_with_llm(model, gold_destination, syllabus_statement, expected_statement):
@@ -64,33 +86,40 @@ JSON only:
         return "not matched"
 
 
-def main():
+def process_gold_matching():
+    """
+    Main function to process gold statement matching.
+    Automatically finds designation file and creates matched file.
+    """
+    # Automatically detect designation file
+    designation_path = find_designation_file()
+    if not designation_path:
+        print("Error: No designation file found. Run main.py and map_course_designation.py first.")
+        return False
+
+    print(f"Found designation file: {designation_path}")
+
     # Paths
-    results_path = os.path.join("Output", "results.xlsx")
     csv_path = os.path.join("Map", "gold_statements.csv")
 
-    if not os.path.exists(results_path):
-        print(f"Error: Could not find Excel file at {results_path}. Run main.py first.")
-        sys.exit(1)
-
     try:
-        df = pd.read_excel(results_path)
+        df = pd.read_excel(designation_path)
     except Exception as e:
         print(f"Error reading Excel file: {e}")
-        sys.exit(1)
+        return False
 
     # Check required columns
-    required_columns = ['course_code', 'gold_destination', 'gold_statement']
+    required_columns = ['course_code', 'gold_designation', 'gold_statement']
     missing_columns = [col for col in required_columns if col not in df.columns]
     if missing_columns:
-        print(f"Error: Missing columns in results.xlsx: {missing_columns}")
-        sys.exit(1)
+        print(f"Error: Missing columns in {designation_path}: {missing_columns}")
+        return False
 
     # Load gold statements dictionary
     gold_statements_dict = load_gold_statements_csv(csv_path)
     if not gold_statements_dict:
         print("Warning: gold_statements_dict is empty; matching will be skipped.")
-        sys.exit(1)
+        return False
 
     # Initialize model for LLM-as-judge
     model = ModelConfig(
@@ -106,28 +135,39 @@ def main():
     # For each entry, match gold statements using LLM
     for idx, row in df.iterrows():
         course_code = str(row.get('course_code', '')).strip()
-        gold_destination = str(row.get('gold_destination', '')).strip()
+        gold_designation = str(row.get('gold_designation', '')).strip()
         syllabus_statement = str(row.get('gold_statement', '')).strip()
         
-        print(f"{course_code} -> {gold_destination}")
+        print(f"{course_code} -> {gold_designation}")
         
         # Get expected statement from CSV
-        expected_statement = gold_statements_dict.get(gold_destination)
+        expected_statement = gold_statements_dict.get(gold_designation)
         
         # Match gold statements using LLM
-        match_result = match_gold_statements_with_llm(model, gold_destination, syllabus_statement, expected_statement)
+        match_result = match_gold_statements_with_llm(model, gold_designation, syllabus_statement, expected_statement)
         match_results.append(match_result)
         print(f"  Match result: {match_result}")
 
     # Add match results as a new column
     df['match_result'] = match_results
     
-    # Save updated results.xlsx
+    # Create output filename with "_matched" extension
+    base_name = os.path.splitext(designation_path)[0]
+    output_path = f"{base_name}_matched.xlsx"
+    
+    # Save updated results file
     try:
-        df.to_excel(results_path, index=False)
-        print(f"\nUpdated {results_path} with match_result column")
+        df.to_excel(output_path, index=False, na_rep='NA')
+        print(f"\nCreated {output_path} with match_result column")
+        return True
     except Exception as e:
         print(f"Error saving updated Excel file: {e}")
+        return False
+
+
+def main():
+    """Legacy main function for backward compatibility."""
+    process_gold_matching()
 
 
 if __name__ == "__main__":
